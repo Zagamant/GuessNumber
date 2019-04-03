@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28721.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "Dal\Dal.csproj", "{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guess", "Guess\Guess.csproj", "{2C218A12-BCAC-405A-82ED-A03EAA77CF67}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C218A12-BCAC-405A-82ED-A03EAA77CF67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C218A12-BCAC-405A-82ED-A03EAA77CF67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C218A12-BCAC-405A-82ED-A03EAA77CF67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C218A12-BCAC-405A-82ED-A03EAA77CF67}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4E01F0D6-6A60-47BA-A9E3-A993A018DBAD}
+	EndGlobalSection
+EndGlobal
