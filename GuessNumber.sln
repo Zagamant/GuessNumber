@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28721.148
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dal", "Dal\Dal.csproj", "{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dal", "Dal\Dal.csproj", "{F171B395-1F7D-4EC2-B2A5-FE1C7E5A0FAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Guess", "Guess\Guess.csproj", "{2C218A12-BCAC-405A-82ED-A03EAA77CF67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Guess", "Guess\Guess.csproj", "{2C218A12-BCAC-405A-82ED-A03EAA77CF67}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
