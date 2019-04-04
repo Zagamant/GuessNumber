@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Dal.DataBaseHelper;
+using Dal.Encryption;
 using Dal.Model;
 using Guess.Validators;
 
@@ -52,14 +53,14 @@ namespace Guess.ConsoleHelper
             return line;
         }
 
-        public static Player ConsoleAuthenticate(AuthorizationEnum auto, GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
+        public static Player ConsoleAuthenticate(TypeOfAuthorization auto, GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
         {
             switch (auto)
             {
-                case AuthorizationEnum.LogIn:
+                case TypeOfAuthorization.LogIn:
                     return LoginWithConsole(dbHelper, validator);
 
-                case AuthorizationEnum.Registrate:
+                case TypeOfAuthorization.Registrate:
                     return SignUpWithConsole(dbHelper, validator);
                 default:
                     throw new ArgumentOutOfRangeException(nameof(auto), auto, null);
@@ -68,10 +69,10 @@ namespace Guess.ConsoleHelper
 
         private static Player SignUpWithConsole(GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
         {
-            Console.WriteLine("Sign up :");
+            Console.WriteLine("Sign up");
             Console.Write("Username: ");
             var username = ReadString();
-            while (dbHelper.GetPlayerFromDB(username) != null)
+            while (dbHelper.GetPlayerFromDb(username) != null)
             {
                 Console.WriteLine("This username is taken. Try another");
                 Console.Write("Username: ");
@@ -82,13 +83,12 @@ namespace Guess.ConsoleHelper
             var player = new Player()
             {
                 Username = username,
-                Password = password,
-                
+                Password = Cryptography.Encrypt(password)
             };
             dbHelper.DataBase.Players.Add(player);
             dbHelper.DataBase.SaveChanges();
 
-            dbHelper.DataBase.Stats.Add(new Statistic()
+            dbHelper.DataBase.Stats.Add(new Statistic
             {
                 PlayerId = dbHelper.DataBase.Players.SingleOrDefault(playerT => playerT.Username == player.Username).Id
             });
@@ -113,7 +113,7 @@ namespace Guess.ConsoleHelper
             var username = ReadString();
             Console.Write("Password: ");
             var password = ReadString();
-            var player = dbHelper.Authenticate(username, password);
+            var player = dbHelper.LoginToDB(username, password);
 
             while (player == null)
             {
@@ -130,7 +130,7 @@ namespace Guess.ConsoleHelper
                 username = ReadString();
                 Console.Write("Password: ");
                 password = ReadString();
-                player = dbHelper.Authenticate(username, password);
+                player = dbHelper.LoginToDB(username, password);
             }
 
             return player;

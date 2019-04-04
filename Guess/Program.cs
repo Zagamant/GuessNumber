@@ -1,12 +1,10 @@
 ﻿using System;
 using System.IO;
-using System.Text;
 using Dal.DataBaseHelper;
 using Dal.Model;
 using Dal.Repository;
 using Guess.ConsoleHelper;
 using Guess.GameStuff;
-using Guess.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -16,7 +14,7 @@ namespace Guess
     {
         static void Main()
         {
-            ExampleWithMSSql();
+            ExampleWithMsSql();
 
             Console.ReadKey();
         }
@@ -44,52 +42,62 @@ namespace Guess
             playerRep.SaveJson(player2);
         }
 
-        private static void ExampleWithMSSql()
+        private static void ExampleWithMsSql()
         {
-            using (var db = new GameContext(getDataBaseOptions()))
+            using (var db = new GameContext(GetDataBaseOptions()))
             {
                 using (var dbHelper = new GameDataBaseHelper(db))
                 {
                     Console.WriteLine("Player 1 login:");
                     Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
-                    var key = new ConsoleKeyInfo();
-                    AuthorizationEnum? enumchik = null;
+                    ConsoleKeyInfo key;
+                    TypeOfAuthorization? typeOfAuthorization = null;
                     do
                     {
                         key = Console.ReadKey();
                         switch (key.Key)
                         {
                             case ConsoleKey.D1:
-                                enumchik = AuthorizationEnum.LogIn;
+                                typeOfAuthorization = TypeOfAuthorization.LogIn;
                                 break;
                             case ConsoleKey.D2:
-                                enumchik = AuthorizationEnum.Registrate;
+                                typeOfAuthorization = TypeOfAuthorization.Registrate;
                                 break;
                         }
-                    } while (enumchik == null);
-                    var player1 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(enumchik.Value, dbHelper);
+                    } while (typeOfAuthorization == null);
+                    Console.Clear();
+                    Player player1;
+                    do
+                    {
+                        player1 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper);
+
+                    } while (player1 == null);
+                     
 
                     Console.Clear();
                     Console.WriteLine("Player 2 login:");
                     Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
-                    key = new ConsoleKeyInfo();
-                    enumchik = null;
+                    typeOfAuthorization = null;
                     do
                     {
                         key = Console.ReadKey();
                         switch (key.Key)
                         {
                             case ConsoleKey.D1:
-                                enumchik = AuthorizationEnum.LogIn;
+                                typeOfAuthorization = TypeOfAuthorization.LogIn;
                                 break;
                             case ConsoleKey.D2:
-                                enumchik = AuthorizationEnum.Registrate;
+                                typeOfAuthorization = TypeOfAuthorization.Registrate;
                                 break;
                         }
-                    } while (enumchik == null);
-                    var player2 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(enumchik.Value, dbHelper);
-
-                    
+                    } while (typeOfAuthorization == null);
+                    Console.Clear();
+                    Player player2;
+                    do
+                    {
+                        player2 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper);
+                    } while (player2 == null);
+                    Console.Clear();
 
                     var game = new Game(player1, player2);
                     game.PlayOneRound();
@@ -103,7 +111,7 @@ namespace Guess
 
         }
 
-        private static DbContextOptions<GameContext> getDataBaseOptions()
+        private static DbContextOptions<GameContext> GetDataBaseOptions()
         {
             var builder = new ConfigurationBuilder();
             // установка пути к текущему каталогу

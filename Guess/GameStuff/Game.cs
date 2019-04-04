@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Dal.Model;
 using Guess.Validators;
 
@@ -42,7 +41,7 @@ namespace Guess.GameStuff
             {
                 _player2.Statistic.WinCount++;
                 _player2.Statistic.Score += GameRule.MaxAttempt - ++_attempt;
-                Console.WriteLine("_win!");
+                Console.WriteLine("Win!");
             }
             else
             {

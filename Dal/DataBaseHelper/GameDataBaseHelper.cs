@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.Linq;
-using System.Text;
+using Dal.Encryption;
 using Dal.Model;
 
 namespace Dal.DataBaseHelper
@@ -13,7 +12,7 @@ namespace Dal.DataBaseHelper
 
         public GameDataBaseHelper(GameContext dataBase)
         {
-            this.DataBase = dataBase;
+            DataBase = dataBase;
         }
 
         public bool TryGetPlayerFromDB(int playerId)
@@ -22,12 +21,12 @@ namespace Dal.DataBaseHelper
             return player1 != null;
         }
 
-        public Player GetPlayerFromDB(int playerId)
+        public Player GetPlayerFromDb(int playerId)
         {
             return DataBase.Players.Find(playerId);
         }
 
-        public Player GetPlayerFromDB(string username)
+        public Player GetPlayerFromDb(string username)
         {
             return DataBase.Players.SingleOrDefault(player => player.Username == username);
         }
@@ -35,29 +34,26 @@ namespace Dal.DataBaseHelper
         /// <summary>
         /// Add player to DataBase and return id of player.
         /// </summary>
-        /// <param name="db">Your DataBase</param>
         /// <param name="player">Player need to add</param>
         /// <returns>Return Id of new player</returns>
-        public long AddPlayerToDB(Player player)
+        public long AddPlayerToDb(Player player)
         {
             DataBase.Players.Add(player);
             DataBase.SaveChanges();
             return DataBase.Players.First(p => p.Username == player.Username).Id;
         }
 
-        public Player Authenticate(string username, string password)
+        public Player LoginToDB(string username, string password)
         {
-            var player = DataBase.Players.FirstOrDefault(acc => acc.Username == username);
+            var player = GetPlayerFromDb(username);
 
-            if (player == null || player.Password != password)
+            if (player == null || Cryptography.Decrypt(player.Password) != password)
                 return null;
 
             var stat = DataBase.Stats.SingleOrDefault(idPlayer => idPlayer.PlayerId == player.Id);
 
-            if (stat == null)
-                throw new SqlNullValueException("Player doesn't have statistics");
+            player.Statistic = stat ?? throw new SqlNullValueException("Player doesn't have statistics");
 
-            player.Statistic = stat;
             return player;
 
         }
@@ -68,7 +64,7 @@ namespace Dal.DataBaseHelper
             var player = new Player
             {
                 Username = username,
-                Password = password,
+                Password = Cryptography.Encrypt(password),
                 Statistic = new Statistic()
                 
             };
