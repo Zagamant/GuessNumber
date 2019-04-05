@@ -5,6 +5,7 @@ using Dal.Model;
 using Dal.Repository;
 using Guess.ConsoleHelper;
 using Guess.GameStuff;
+using Guess.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -44,7 +45,7 @@ namespace Guess
 
         private static void ExampleWithMsSql()
         {
-            using (var db = new GameContext(GetDataBaseOptions()))
+            using (var db = new GameContext(/*GetDataBaseOptions()*/))
             {
                 using (var dbHelper = new GameDataBaseHelper(db))
                 {
@@ -95,8 +96,9 @@ namespace Guess
                     Player player2;
                     do
                     {
-                        player2 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper);
+                        player2 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper, new PlayerRepeatingValidator(player1));
                     } while (player2 == null);
+
                     Console.Clear();
 
                     var game = new Game(player1, player2);

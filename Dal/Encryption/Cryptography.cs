@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -57,6 +58,17 @@ namespace Dal.Encryption
             }
 
             return cipherText;
+        }
+
+        public static string EncryptSHA1(string input)
+        {
+            using (var sha1 = new SHA1Managed())
+            {
+                var hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(input + "Tss...they doesn't know))"));
+
+                //Use "X2" to UpperCase encrypt or "x2" to lowerCase
+                return string.Concat(hash.Select(b => b.ToString("X2")));
+            }
         }
     }
 }

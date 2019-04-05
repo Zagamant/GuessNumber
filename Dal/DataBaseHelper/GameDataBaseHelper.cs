@@ -47,7 +47,7 @@ namespace Dal.DataBaseHelper
         {
             var player = GetPlayerFromDb(username);
 
-            if (player == null || Cryptography.Decrypt(player.Password) != password)
+            if (player == null || player.Password != Cryptography.EncryptSHA1(password))
                 return null;
 
             var stat = DataBase.Stats.SingleOrDefault(idPlayer => idPlayer.PlayerId == player.Id);
@@ -58,13 +58,13 @@ namespace Dal.DataBaseHelper
 
         }
 
-        public Player Registrate(string username, string password)
+        public Player or(string username, string password)
         {
             
             var player = new Player
             {
                 Username = username,
-                Password = Cryptography.Encrypt(password),
+                Password = Cryptography.EncryptSHA1(password),
                 Statistic = new Statistic()
                 
             };

@@ -13,15 +13,20 @@ namespace Dal.DataBaseHelper
             Database.EnsureCreated();
         }
 
+        public GameContext() : base()
+        {
+            Database.EnsureCreated();
+        }
+
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{
         //    modelBuilder.Entity<Player>().HasKey(u => u.Id);
         //}
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GameDB;Trusted_Connection=True;");
-        //}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=GameDB;Trusted_Connection=True;");
+        }
 
     }
 }

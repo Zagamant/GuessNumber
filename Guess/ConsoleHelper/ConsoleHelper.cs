@@ -26,7 +26,7 @@ namespace Guess.ConsoleHelper
                 var errors = validators?.Where(x => !x.Validate(number)).SelectMany(x => x.Errors).ToList();
                 if (errors?.Any() ?? false)
                 {
-                    Console.WriteLine(string.Join("\n", errors));
+                    Console.WriteLine(string.Join("", errors));
                     line = Console.ReadLine();
                 }
 
@@ -41,10 +41,10 @@ namespace Guess.ConsoleHelper
 
             do
             {
-                var errors = validators?.Where(x => !x.Validate(line)).SelectMany(x => x.Errors).ToList();
+                var errors = validators?.Where(x => !x.Validate(line)).Select(x => x.Errors).ToList();
                 if (errors?.Any() ?? false)
                 {
-                    Console.WriteLine(string.Join("\n", errors));
+                    Console.WriteLine(string.Join("", errors));
                     line = Console.ReadLine();
                 }
 
@@ -53,21 +53,47 @@ namespace Guess.ConsoleHelper
             return line;
         }
 
-        public static Player ConsoleAuthenticate(TypeOfAuthorization auto, GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
+        public static Player ConsoleAuthenticate(TypeOfAuthorization auto, GameDataBaseHelper dbHelper, params IValidator<Player>[] validators)
         {
+
+            Player player;
+
             switch (auto)
             {
                 case TypeOfAuthorization.LogIn:
-                    return LoginWithConsole(dbHelper, validator);
-
+                    player = LoginWithConsole(dbHelper);
+                    break;
                 case TypeOfAuthorization.Registrate:
-                    return SignUpWithConsole(dbHelper, validator);
+                    player = SignUpWithConsole(dbHelper);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(auto), auto, null);
             }
+
+            do
+            {
+                var errors = validators?.Where(x => !x.Validate(player)).SelectMany(x => x.Errors).ToList();
+                Console.WriteLine(string.Join("", errors));
+                if (errors?.Any() ?? false)
+                {
+                    switch (auto)
+                    {
+                        case TypeOfAuthorization.LogIn:
+                            player = LoginWithConsole(dbHelper);
+                            break;
+                        case TypeOfAuthorization.Registrate:
+                            player = SignUpWithConsole(dbHelper);
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException(nameof(auto), auto, null);
+                    }
+                }
+            } while (validators?.Any(x => !x.Validate(player)) ?? false);
+
+            return player;
         }
 
-        private static Player SignUpWithConsole(GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
+        private static Player SignUpWithConsole(GameDataBaseHelper dbHelper)
         {
             Console.WriteLine("Sign up");
             Console.Write("Username: ");
@@ -83,7 +109,7 @@ namespace Guess.ConsoleHelper
             var player = new Player()
             {
                 Username = username,
-                Password = Cryptography.Encrypt(password)
+                Password = Cryptography.EncryptSHA1(password)
             };
             dbHelper.DataBase.Players.Add(player);
             dbHelper.DataBase.SaveChanges();
@@ -106,7 +132,7 @@ namespace Guess.ConsoleHelper
             return str.ToString();
         }
 
-        public static Player LoginWithConsole(GameDataBaseHelper dbHelper, params IValidator<Player>[] validator)
+        public static Player LoginWithConsole(GameDataBaseHelper dbHelper)
         {
             Console.WriteLine("Login in system:");
             Console.Write("Username: ");
@@ -118,13 +144,10 @@ namespace Guess.ConsoleHelper
             while (player == null)
             {
                 Console.Clear();
-                var key = new ConsoleKeyInfo();
-                Console.WriteLine("Wrong username or password. Type 2 - to go back");
-                switch (key.Key)
-                {
-                    case ConsoleKey.D2:
-                        return null;
-                }
+                Console.WriteLine("Wrong username or password. Type 2 - to go back or any key to continue");
+                var key = Console.ReadKey();
+                if (key.Key == ConsoleKey.D2)
+                    return null;
 
                 Console.Write("Username: ");
                 username = ReadString();
