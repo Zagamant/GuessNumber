@@ -1,4 +1,5 @@
-﻿using Dal.Model;
+﻿using System.Linq;
+using Dal.Model;
 using Microsoft.EntityFrameworkCore;
 
 namespace Dal.DataBaseHelper
@@ -14,15 +15,15 @@ namespace Dal.DataBaseHelper
         //    Database.EnsureCreated();
         //}
 
-        public GameContext()
-        {
-            
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
-            modelBuilder.Entity<Player>().HasOne<Statistic>(player => player.Statistic).WithOne(stat => stat.Player)
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
+
+
+            modelBuilder.Entity<Player>().HasOne(player => player.Statistic).WithOne(stat => stat.Player)
                 .HasForeignKey<Statistic>(stat => stat.Id).OnDelete(DeleteBehavior.Cascade);
           
 
@@ -31,12 +32,14 @@ namespace Dal.DataBaseHelper
             //    .WithMany(player => player.Games)
             //    .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Player>().HasMany<Game>(game => game.Games)
+            modelBuilder.Entity<Player>().HasMany(game => game.Games)
                 .WithOne(player => player.PlayerGuessingNumber)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            //modelBuilder.Entity<Game>().HasOne(game => game.PlayerMakeNumber).WithMany(player => player.Games);
+
+
+
             base.OnModelCreating(modelBuilder);
         }
 

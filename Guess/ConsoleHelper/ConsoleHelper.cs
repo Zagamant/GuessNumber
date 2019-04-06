@@ -4,7 +4,7 @@ using System.Text;
 using Dal.DataBaseHelper;
 using Dal.Encryption;
 using Dal.Model;
-using Dal.Repository.DataBase;
+using Dal.Repository;
 using Guess.Validators;
 
 namespace Guess.ConsoleHelper
@@ -110,7 +110,7 @@ namespace Guess.ConsoleHelper
             var player = new Player()
             {
                 Username = username,
-                Password = Cryptography.EncryptSHA1(password)
+                Password = Cryptography.EncryptSha1(password)
             };
             playerRepo.Save(player);
 
