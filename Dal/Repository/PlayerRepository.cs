@@ -1,10 +1,9 @@
-﻿using System.Data.SqlTypes;
-using System.Linq;
+﻿using System.Linq;
 using Dal.DataBaseHelper;
 using Dal.Encryption;
 using Dal.Model;
 
-namespace Dal.Repository.DataBase
+namespace Dal.Repository
 {
     public class PlayerRepository : BaseRepository<Player>
     {
@@ -25,7 +24,7 @@ namespace Dal.Repository.DataBase
         {
             var player = Entity.SingleOrDefault(user => user.Username == username);         
 
-            if (player == null || player.Password != Cryptography.EncryptSHA1(password))
+            if (player == null || player.Password != Cryptography.EncryptSha1(password))
                 return null;
             StatisticRepository statRepo = new StatisticRepository(GameContext);
             player.Statistic = statRepo.Get(player.Id);
