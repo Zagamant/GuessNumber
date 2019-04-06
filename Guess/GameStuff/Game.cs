@@ -10,8 +10,8 @@ namespace Guess.GameStuff
     {
         public GameRule GameRule { get; private set; }
 
-        private readonly Player _player1;
-        private readonly Player _player2;
+        private Player _player1;
+        private Player _player2;
 
         private dbModels.Game game;
 
@@ -26,8 +26,8 @@ namespace Guess.GameStuff
             game = new dbModels.Game
             {
                 Date = DateTime.Now,
-                PlayerMakeNumber = _player1,
-                PlayerGuessingNumber = _player2
+                PlayerMakeNumber = player1,
+                PlayerGuessingNumber = player2
             };
             
         }

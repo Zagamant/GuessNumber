@@ -1,7 +1,7 @@
 ﻿using Dal.DataBaseHelper;
 using Dal.Model;
 
-namespace Dal.Repository
+namespace Dal.Repository.DataBase
 {
     public class StatisticRepository : BaseRepository<Statistic>
     {

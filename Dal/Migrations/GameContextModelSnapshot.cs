@@ -4,6 +4,7 @@ using Dal.DataBaseHelper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Dal.Migrations
 {
@@ -28,7 +29,7 @@ namespace Dal.Migrations
 
                     b.Property<long?>("PlayerGuessingNumberId");
 
-                    b.Property<long>("PlayerMakeNumberId");
+                    b.Property<long?>("PlayerMakeNumberId");
 
                     b.HasKey("Id");
 
@@ -79,8 +80,7 @@ namespace Dal.Migrations
 
                     b.HasOne("Dal.Model.Player", "PlayerMakeNumber")
                         .WithMany()
-                        .HasForeignKey("PlayerMakeNumberId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("PlayerMakeNumberId");
                 });
 
             modelBuilder.Entity("Dal.Model.Statistic", b =>

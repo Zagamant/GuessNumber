@@ -21,21 +21,17 @@ namespace Dal.Encryption
             byte[] clearBytes = Encoding.Unicode.GetBytes(encryptString);
             using (Aes encryptor = Aes.Create())
             {
-                if (encryptor != null)
+                encryptor.Key = Pdb.GetBytes(32);
+                encryptor.IV = Pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    encryptor.Key = Pdb.GetBytes(32);
-                    encryptor.IV = Pdb.GetBytes(16);
-                    using (MemoryStream ms = new MemoryStream())
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(), CryptoStreamMode.Write))
                     {
-                        using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateEncryptor(),
-                            CryptoStreamMode.Write))
-                        {
-                            cs.Write(clearBytes, 0, clearBytes.Length);
-                            cs.Close();
-                        }
-
-                        encryptString = Convert.ToBase64String(ms.ToArray());
+                        cs.Write(clearBytes, 0, clearBytes.Length);
+                        cs.Close();
                     }
+
+                    encryptString = Convert.ToBase64String(ms.ToArray());
                 }
             }
 
@@ -48,28 +44,24 @@ namespace Dal.Encryption
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (Aes encryptor = Aes.Create())
             {
-                if (encryptor != null)
+                encryptor.Key = Pdb.GetBytes(32);
+                encryptor.IV = Pdb.GetBytes(16);
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    encryptor.Key = Pdb.GetBytes(32);
-                    encryptor.IV = Pdb.GetBytes(16);
-                    using (MemoryStream ms = new MemoryStream())
+                    using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        using (CryptoStream cs = new CryptoStream(ms, encryptor.CreateDecryptor(),
-                            CryptoStreamMode.Write))
-                        {
-                            cs.Write(cipherBytes, 0, cipherBytes.Length);
-                            cs.Close();
-                        }
-
-                        cipherText = Encoding.Unicode.GetString(ms.ToArray());
+                        cs.Write(cipherBytes, 0, cipherBytes.Length);
+                        cs.Close();
                     }
+
+                    cipherText = Encoding.Unicode.GetString(ms.ToArray());
                 }
             }
 
             return cipherText;
         }
 
-        public static string EncryptSha1(string input)
+        public static string EncryptSHA1(string input)
         {
             using (var sha1 = new SHA1Managed())
             {

@@ -4,7 +4,7 @@ using Dal.DataBaseHelper;
 using Dal.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Dal.Repository
+namespace Dal.Repository.DataBase
 {
     public class BaseRepository<T> where T : BaseModel
     {

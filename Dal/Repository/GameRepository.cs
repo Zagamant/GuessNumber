@@ -3,7 +3,7 @@ using System.Linq;
 using Dal.DataBaseHelper;
 using Dal.Model;
 
-namespace Dal.Repository
+namespace Dal.Repository.DataBase
 {
     public class GameRepository : BaseRepository<Game>
     {
@@ -22,7 +22,7 @@ namespace Dal.Repository
             PlayerRepository playerRepo = new PlayerRepository(GameContext);
             var game = base.Get(id);
             game.PlayerGuessingNumber = playerRepo.Get(game.PlayerGuessingNumber.Id);
-            game.PlayerMakeNumber = playerRepo.Get(game.PlayerMakeNumberId);
+            game.PlayerMakeNumber = playerRepo.Get(game.PlayerMakeNumber.Id);
             return game;
         }
 
