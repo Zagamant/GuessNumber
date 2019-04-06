@@ -4,6 +4,7 @@ using System.Text;
 using Dal.DataBaseHelper;
 using Dal.Encryption;
 using Dal.Model;
+using Dal.Repository.DataBase;
 using Guess.Validators;
 
 namespace Guess.ConsoleHelper
@@ -53,18 +54,18 @@ namespace Guess.ConsoleHelper
             return line;
         }
 
-        public static Player ConsoleAuthenticate(TypeOfAuthorization auto, GameDataBaseHelper dbHelper, params IValidator<Player>[] validators)
+        public static Player ConsoleAuthenticate(TypeOfAuthorization auto, GameContext db, params IValidator<Player>[] validators)
         {
-
+            PlayerRepository playerRepo = new PlayerRepository(db);
             Player player;
 
             switch (auto)
             {
                 case TypeOfAuthorization.LogIn:
-                    player = LoginWithConsole(dbHelper);
+                    player = LoginWithConsole(playerRepo);
                     break;
                 case TypeOfAuthorization.Registrate:
-                    player = SignUpWithConsole(dbHelper);
+                    player = SignUpWithConsole(playerRepo);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(auto), auto, null);
@@ -79,10 +80,10 @@ namespace Guess.ConsoleHelper
                     switch (auto)
                     {
                         case TypeOfAuthorization.LogIn:
-                            player = LoginWithConsole(dbHelper);
+                            player = LoginWithConsole(playerRepo);
                             break;
                         case TypeOfAuthorization.Registrate:
-                            player = SignUpWithConsole(dbHelper);
+                            player = SignUpWithConsole(playerRepo);
                             break;
                         default:
                             throw new ArgumentOutOfRangeException(nameof(auto), auto, null);
@@ -93,12 +94,12 @@ namespace Guess.ConsoleHelper
             return player;
         }
 
-        private static Player SignUpWithConsole(GameDataBaseHelper dbHelper)
+        private static Player SignUpWithConsole(PlayerRepository playerRepo)
         {
             Console.WriteLine("Sign up");
             Console.Write("Username: ");
             var username = ReadString();
-            while (dbHelper.GetPlayerFromDb(username) != null)
+            while (playerRepo.Get(username) != null)
             {
                 Console.WriteLine("This username is taken. Try another");
                 Console.Write("Username: ");
@@ -111,14 +112,13 @@ namespace Guess.ConsoleHelper
                 Username = username,
                 Password = Cryptography.EncryptSHA1(password)
             };
-            dbHelper.DataBase.Players.Add(player);
-            dbHelper.DataBase.SaveChanges();
+            playerRepo.Save(player);
 
-            dbHelper.DataBase.Stats.Add(new Statistic
-            {
-                PlayerId = dbHelper.DataBase.Players.SingleOrDefault(playerT => playerT.Username == player.Username).Id
-            });
-            dbHelper.DataBase.SaveChanges();
+            //playerRepo.DataBase.Stats.Add(new Statistic
+            //{
+            //    Player = player
+            //});
+            //playerRepo.DataBase.SaveChanges();
             return player;
         }
 
@@ -132,14 +132,14 @@ namespace Guess.ConsoleHelper
             return str.ToString();
         }
 
-        public static Player LoginWithConsole(GameDataBaseHelper dbHelper)
+        public static Player LoginWithConsole(PlayerRepository playerRepo)
         {
             Console.WriteLine("Login in system:");
             Console.Write("Username: ");
             var username = ReadString();
             Console.Write("Password: ");
             var password = ReadString();
-            var player = dbHelper.LoginToDB(username, password);
+            var player = playerRepo.Get(username, password);
 
             while (player == null)
             {
@@ -153,7 +153,7 @@ namespace Guess.ConsoleHelper
                 username = ReadString();
                 Console.Write("Password: ");
                 password = ReadString();
-                player = dbHelper.LoginToDB(username, password);
+                player = playerRepo.Get(username, password);
             }
 
             return player;

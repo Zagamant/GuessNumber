@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
+
 namespace Dal.Encryption
 {
     public static class Cryptography

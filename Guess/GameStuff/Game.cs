@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Dal.Model;
 using Guess.Validators;
+using dbModels = Dal.Model;
 
 namespace Guess.GameStuff
 {
@@ -12,6 +13,8 @@ namespace Guess.GameStuff
         private Player _player1;
         private Player _player2;
 
+        private dbModels.Game game;
+
         private bool _win;
         private int _attempt;
         public List<string> Errors { get; set; } = new List<string>();
@@ -19,11 +22,17 @@ namespace Guess.GameStuff
         public Game(Player player1, Player player2)
         {
             _player1 = player1;
-
-            _player2 = player2;          
+            _player2 = player2;
+            game = new dbModels.Game
+            {
+                Date = DateTime.Now,
+                PlayerMakeNumber = player1,
+                PlayerGuessingNumber = player2
+            };
+            
         }
 
-        public void PlayOneRound()
+        public dbModels.Game PlayOneRound()
         {
             FirstPlayerSetGameRules();
 
@@ -32,6 +41,8 @@ namespace Guess.GameStuff
             EndGame();
             
             Console.ReadKey();
+
+            return game;
         }
 
         private void EndGame()

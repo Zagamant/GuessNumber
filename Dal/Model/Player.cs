@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Dal.Model
 {
@@ -7,6 +8,8 @@ namespace Dal.Model
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Username { get; set; }
         public string Password { get; set; }
-        public Statistic Statistic { get; set; }
+        public virtual Statistic Statistic { get; set; }
+        public virtual List<Game> Games { get; set; }
+
     }
 }

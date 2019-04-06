@@ -1,13 +1,14 @@
-﻿using Dal.Model;
+﻿using Dal.DataBaseHelper;
+using Dal.Model;
 
-namespace Dal.Repository
+namespace Dal.Repository.DataBase
 {
     public class StatisticRepository : BaseRepository<Statistic>
     {
-        private const string FolderName = "Statistic";
-
-        public StatisticRepository() : base(FolderName)
+        public StatisticRepository(GameContext gameContext) : base(gameContext)
         {
+
         }
+
     }
 }

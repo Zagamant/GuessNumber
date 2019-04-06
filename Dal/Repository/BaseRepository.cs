@@ -1,59 +1,48 @@
-﻿using System;
-using System.IO;
-using Dal.Helper;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Dal.DataBaseHelper;
 using Dal.Model;
+using Microsoft.EntityFrameworkCore;
 
-namespace Dal.Repository
+namespace Dal.Repository.DataBase
 {
-    public abstract class BaseRepository<T> where  T : BaseModel
+    public class BaseRepository<T> where T : BaseModel
     {
-        private readonly string _applicationPath = Environment.CurrentDirectory;
-        private readonly string _folderName;
+        protected GameContext GameContext { get; set; }
+        protected DbSet<T> Entity { get; set; }
 
-        protected BaseRepository(string folder)
+        public BaseRepository(GameContext gameContext)
         {
-            _folderName = folder;
-
-            var folderPass = Path.Combine(_applicationPath, _folderName);
-            if (!Directory.Exists(folderPass))
-            {
-                Directory.CreateDirectory(folderPass);
-            }
-
+            GameContext = gameContext;
+            Entity = GameContext.Set<T>();
         }
 
-        public T GetJson(long id)
+        public virtual T Save(T model)
         {
-            var path = GetPath(id);
-            if (!File.Exists(path))
-            {
-                return null;
-            }
-
-            using (var sr = new StreamReader(path))
-            {
-                var json = sr.ReadToEnd();
-                var model = JsonSerializeHelper.Deserialize<T>(json);
-                return model;
-            }
+            Entity.Add(model);
+            GameContext.SaveChanges();
+            return model;
         }
 
-        public void SaveJson(T model)
+        public List<T> GetAll()
         {
-            var path = GetPath(model.Id);
-            var json = JsonSerializeHelper.Serialize(model);
-
-            using (var sw = new StreamWriter(path))
-            {
-                sw.Write(json);
-            }
+            return Entity.ToList();
         }
 
-        private string GetPath(long id)
+        public virtual T Get(long id)
         {
-            var fileName = $"{id}.json";
-            return Path.Combine(_applicationPath, _folderName, fileName);
+            return Entity.SingleOrDefault(x => x.Id == id);
         }
 
+        public void Remove(long id)
+        {
+            Remove(Get(id));
+        }
+
+        public void Remove(T model)
+        {
+            Entity.Remove(model);
+            GameContext.SaveChanges();
+        }
     }
 }

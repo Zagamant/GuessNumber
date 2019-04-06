@@ -2,9 +2,8 @@
 using System.IO;
 using Dal.DataBaseHelper;
 using Dal.Model;
-using Dal.Repository;
+using Dal.Repository.DataBase;
 using Guess.ConsoleHelper;
-using Guess.GameStuff;
 using Guess.Validators;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -20,97 +19,75 @@ namespace Guess
             Console.ReadKey();
         }
 
-        private static void ExampleWithJson()
-        {
-            var playerRep = new PlayerRepository();
-            var player1 = playerRep.GetJson(1) ?? new Player()
-            {
-                Id = 1,
-                Username = "Zaga"
-            };
-
-            var player2 = playerRep.GetJson(2) ?? new Player()
-            {
-                Id = 2,
-                Username = "Bloodlinez"
-            };
-
-            var game = new Game(player1, player2);
-            game.PlayOneRound();
-
-
-            playerRep.SaveJson(player1);
-            playerRep.SaveJson(player2);
-        }
-
         private static void ExampleWithMsSql()
         {
-            using (var db = new GameContext(/*GetDataBaseOptions()*/))
+            using (var db = new GameContext( /*GetDataBaseOptions()*/))
             {
-                using (var dbHelper = new GameDataBaseHelper(db))
+
+                Console.WriteLine("Player 1 login:");
+                Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
+                ConsoleKeyInfo key;
+                TypeOfAuthorization? typeOfAuthorization = null;
+                do
                 {
-                    Console.WriteLine("Player 1 login:");
-                    Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
-                    ConsoleKeyInfo key;
-                    TypeOfAuthorization? typeOfAuthorization = null;
-                    do
+                    key = Console.ReadKey();
+                    switch (key.Key)
                     {
-                        key = Console.ReadKey();
-                        switch (key.Key)
-                        {
-                            case ConsoleKey.D1:
-                                typeOfAuthorization = TypeOfAuthorization.LogIn;
-                                break;
-                            case ConsoleKey.D2:
-                                typeOfAuthorization = TypeOfAuthorization.Registrate;
-                                break;
-                        }
-                    } while (typeOfAuthorization == null);
-                    Console.Clear();
-                    Player player1;
-                    do
+                        case ConsoleKey.D1:
+                            typeOfAuthorization = TypeOfAuthorization.LogIn;
+                            break;
+                        case ConsoleKey.D2:
+                            typeOfAuthorization = TypeOfAuthorization.Registrate;
+                            break;
+                    }
+                } while (typeOfAuthorization == null);
+
+                Console.Clear();
+                Player player1;
+                do
+                {
+                    player1 = ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, db);
+
+                } while (player1 == null);
+
+
+                Console.Clear();
+                Console.WriteLine("Player 2 login:");
+                Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
+                typeOfAuthorization = null;
+                do
+                {
+                    key = Console.ReadKey();
+                    switch (key.Key)
                     {
-                        player1 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper);
+                        case ConsoleKey.D1:
+                            typeOfAuthorization = TypeOfAuthorization.LogIn;
+                            break;
+                        case ConsoleKey.D2:
+                            typeOfAuthorization = TypeOfAuthorization.Registrate;
+                            break;
+                    }
+                } while (typeOfAuthorization == null);
 
-                    } while (player1 == null);
-                     
+                Console.Clear();
 
-                    Console.Clear();
-                    Console.WriteLine("Player 2 login:");
-                    Console.WriteLine(ConsoleHelper.ConsoleHelper.GetInstructions());
-                    typeOfAuthorization = null;
-                    do
-                    {
-                        key = Console.ReadKey();
-                        switch (key.Key)
-                        {
-                            case ConsoleKey.D1:
-                                typeOfAuthorization = TypeOfAuthorization.LogIn;
-                                break;
-                            case ConsoleKey.D2:
-                                typeOfAuthorization = TypeOfAuthorization.Registrate;
-                                break;
-                        }
-                    } while (typeOfAuthorization == null);
-                    Console.Clear();
-                    Player player2;
-                    do
-                    {
-                        player2 = Guess.ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, dbHelper, new PlayerRepeatingValidator(player1));
-                    } while (player2 == null);
+                Player player2;
+                do
+                {
+                    player2 = ConsoleHelper.ConsoleHelper.ConsoleAuthenticate(typeOfAuthorization.Value, db,
+                        new PlayerRepeatingValidator(player1));
+                } while (player2 == null);
 
-                    Console.Clear();
+                Console.Clear();
 
-                    var game = new Game(player1, player2);
-                    game.PlayOneRound();
+                var game = new Guess.GameStuff.Game(player1, player2);
+                var gameRepo = new GameRepository(db);
+                gameRepo.Save(game.PlayOneRound());
 
-                    dbHelper.SaveChanges(player1, player2);
-
-                    Console.WriteLine($"{player1.Username} - {player1.Id} - {player1.Password}");
-                    Console.WriteLine($"{player2.Username} - {player2.Id} - {player2.Password}");
-                }
+                Console.WriteLine($"{player1.Username} - {player1.Id} - {player1.Password}");
+                Console.WriteLine($"{player2.Username} - {player2.Id} - {player2.Password}");
             }
-
+            
         }
 
         private static DbContextOptions<GameContext> GetDataBaseOptions()
